@@ -8,7 +8,7 @@ void swap(int &num1, int &num2);
 void display(int *array, int length);
 
 
-void insert_sort(int *array, int length);
+void insert_sort(int *array, int left, int right);
 void merge_sort(int *array, int left, int length);
 void merge_sort(int *array, int length);
 
@@ -17,40 +17,70 @@ int select_pivot(int *array, int left, int right);
 int select_pivot_random(int *array, int left, int right);
 int select_pivot_medium(int *array, int left, int right);
 int partition(int *array, int left, int right);
+int partition_optimize(int *array, int left, int right, int& left_len, int& right_len);
 void quick_sort(int *array, int left, int right);
 void no_recurrence_quick_sort(int *array, int left, int right);
 void qs_no_rec(int *array, int left, int right);
+void quick_sort_optimize(int *array, int left, int right);
 
 int main(int argc, char const *argv[])
 {
-	// int A[] = {3, 2, 5, 4, 10, 17, 8, 9, 7, 6, 20, 78, 62, 84, 30, 95, 58, 76, 1, 0};
-	int A[] = {3, 2, 5, 4, 10, 17, 8, 9, 7, 6};
+	// int A[] = {3, 2, 5, 4, 10, 17, 8, 9, 7, 6, 20, 78, 62, 84, 30, 95, 58, 76, 1, 0, 3, 2, 5, 4, 10, 17, 8, 9, 7, 6, 20, 78, 62, 84, 30, 95, 58, 76, 1, 0};
+	// int A[] = {3, 2, 5, 4, 10, 17, 8, 9, 7, 6, 3, 2, 5};
+	int length;
 
-	// int A[] = {2, 3};
-	int length = Length(A, int);
+	std::cin >> length;
+
+	int *A = new int[length];
+
+	srand((unsigned)time(NULL));
+
+	for (int i = 0; i < length; ++ i)
+	{
+		A[i] = rand() % length;
+	}
 
 	// display(A, length);
 
+	clock_t start, finish;
+	double total_time;
+
+	start = clock();
+
+	// int A[] = {2, 3};
+	// int length = Length(A, int);
+
+	display(A, length);
+
 	// std::cout << "game of throne" << std::endl;
-	// insert_sort(A, length);
+	// insert_sort(A, 6, length - 1);
 	// merge_sort(A, 0, length);
 	// merge_sort(A, length);
     // quick_sort(A, 0, length - 1);
 	// int result = select_pivot_medium(A, 0, 1);
-	qs_no_rec(A, 0, length - 1);
+	// qs_no_rec(A, 0, length - 1);
+	quick_sort_optimize(A, 0, length - 1);
+
+	finish = clock();
+
+	total_time = (double)(finish - start) / CLOCKS_PER_SEC;
 
 	display(A, length);
+
+	std::cout << "----------------" << std::endl;
+	std::cout << total_time << "\t s" << std::endl;
 	return 0;
 }
 
-void insert_sort(int A[], int length)
+void insert_sort(int A[], int left, int right)
 {
+	int length = right - left + 1;
 	if (A == nullptr || length <= 0)
 		return;
 
-	for (int i = 1; i < length; ++ i)
+	for (int i = left + 1; i <= right; ++ i)
 	{
-		for (int j = i; j > 0; -- j)
+		for (int j = i; j > left; -- j)
 		{
 			if (A[j] < A[j - 1])
 				swap(A[j], A[j - 1]);
@@ -241,6 +271,73 @@ int partition(int *array, int left, int right)
 	return right_item;
 }
 
+
+/**
+ * 这个方法主要是用于解决在数组中存在大量的重复数据的问题
+ * 主要思路就是在前后两个指针相对移动的时候顺便处理和pivot相等的数据
+ * 1. 将他们移动到数组的两端
+ * 2. 将他们从数组两端移动到中间
+ * 3. 对剩下的数据进行快排
+ * @args left_len		表示数组的左半子数组中含有pivot的长度
+ * @args right_len 		表示数组的右半子数组中含有的pivot的长度
+ * **/
+int partition_optimize(int *array, int left, int right, int& left_len, int& right_len)
+{
+	int pivot = select_pivot_medium(array, left, right);
+
+	int first = left, last = right;
+	left_len = 0;
+	right_len = 0;
+	int left_item = left, right_item = right;
+
+	
+	while (left_item < right_item)
+	{
+		while (left_item < right_item && array[right_item] >= pivot)
+		{
+			if (array[right_item] == pivot) 
+			{
+				swap(array[right_item], array[right]);
+				-- right;
+				++ right_len;
+			}
+			-- right_item;
+		}
+		array[left_item] = array[right_item];
+
+		while (left_item < right_item && array[left_item] <= pivot)
+		{	
+			if (array[left_item] == pivot)
+			{
+				swap(array[left], array[left_item]);
+				++ left;
+				++ left_len;
+			}
+			++ left_item;
+		}
+		array[right_item] = array[left_item];
+	}
+	array[left_item] = pivot;
+
+	int low = first, high = left_item - 1;
+	while (low < left && array[high] != pivot)
+	{
+		swap(array[low], array[high]);
+		++ low;
+		-- high;
+	}
+
+	low = left_item + 1;
+	high = last;
+	while (high > right && array[low] != pivot)
+	{
+		swap(array[low], array[high]);
+		++ low;
+		-- high;
+	}
+	return left_item;
+}
+
 /**
  *	其实真正的排序是由partition完成的
  *	栈的数据结构只是提供了一个空间
@@ -279,4 +376,19 @@ void qs_no_rec(int *array, int left, int right)
 {
 	partition(array, left, right);
 	no_recurrence_quick_sort(array, left, right);
+}
+
+void quick_sort_optimize(int *array, int left, int right)
+{
+	if (right - left + 1 < 10)
+	{
+		insert_sort(array, left, right);
+		return;
+	}
+
+	int left_len = 0, right_len = 0;
+	int index = partition_optimize(array, left, right, left_len, right_len);
+
+	quick_sort_optimize(array, left, index - 1 - left_len);
+	quick_sort_optimize(array, index + 1 + right_len, right);
 }
