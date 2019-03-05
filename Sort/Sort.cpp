@@ -40,6 +40,7 @@ int main(int argc, char const *argv[])
 		A[i] = rand() % length;
 	}
 
+	//	int A[] = {4, 3, 10, 7, 7, 6, 7, 5, 4, 3, 12, 11, 0, 14, 12};
 	// display(A, length);
 
 	clock_t start, finish;
@@ -48,7 +49,7 @@ int main(int argc, char const *argv[])
 	start = clock();
 
 	// int A[] = {2, 3};
-	// int length = Length(A, int);
+	//	int length = Length(A, int);
 
 	display(A, length);
 
@@ -56,10 +57,10 @@ int main(int argc, char const *argv[])
 	// insert_sort(A, 6, length - 1);
 	// merge_sort(A, 0, length);
 	// merge_sort(A, length);
-    // quick_sort(A, 0, length - 1);
+    quick_sort(A, 0, length - 1);
 	// int result = select_pivot_medium(A, 0, 1);
 	// qs_no_rec(A, 0, length - 1);
-	quick_sort_optimize(A, 0, length - 1);
+	// quick_sort_optimize(A, 0, length - 1);
 
 	finish = clock();
 
@@ -258,7 +259,7 @@ int partition(int *array, int left, int right)
 	int left_item = left + 1, right_item = right;
 	while (left_item < right_item)
 	{
-		while (left_item < right_item && array[right_item] > pivot)
+		while (left_item < right_item && array[right_item] >= pivot)
 			-- right_item;
 		while (left_item < right_item && array[left_item] < pivot)
 			++ left_item;
