@@ -1,4 +1,5 @@
 #include "Stack.h"
+#include <iostream>
 
 Node::Node()
 {
@@ -278,4 +279,184 @@ bool Queue_By_Stack::is_empty()
 int Queue_By_Stack::size()
 {
     return in_stack -> size() + out_stack -> size();
+}
+
+CheckLegit::CheckLegit()
+{
+    stack = new Stack();
+}
+
+CheckLegit::~CheckLegit()
+{
+    delete stack;
+}
+
+CheckLegit::CheckLegit(std::vector<int> in_seq, std::vector<int> out_seq) : in_seq(in_seq), out_seq(out_seq)
+{
+    stack = new Stack();
+}
+
+bool CheckLegit::is_invalid()
+{
+    int index_in = 0, index_out = 0;
+
+    while (index_in < in_seq.size() && index_out < out_seq.size())
+    {
+        while (index_in < in_seq.size() && (stack -> is_empty() || stack -> top() != out_seq[index_out]))
+        {
+            stack -> push(in_seq[index_in]);
+            ++ index_in;
+        }
+        while (index_out < out_seq.size() && stack -> top() == out_seq[index_out])
+        {
+            stack -> pop();
+            ++ index_out;
+        }
+    } 
+    
+    return stack -> is_empty();
+}
+
+Arrray_Stack::Arrray_Stack(int cap)
+{
+    capcity = cap;
+    left_last  = -1;
+    right_last = cap;
+    array = new int[cap];
+}
+
+Arrray_Stack::Arrray_Stack()
+{
+    capcity = 10;
+    left_last  = -1;
+    right_last = 10;
+    array = new int[10];
+}
+
+Arrray_Stack::~Arrray_Stack()
+{
+    delete array;
+}
+
+void Arrray_Stack::push(int flag, int value)
+{
+    if (check_capcity())
+    {
+        increase_capcity();
+    }
+    
+    switch (flag)
+    {
+        case STACK1:
+            ++ left_last;
+            array[left_last] = value;
+            break;
+    
+        case STACK2:
+            -- right_last;
+            array[right_last] = value;
+            break;
+        
+        default :
+            break;
+    }
+}
+
+int Arrray_Stack::pop(int flag)
+{
+    if (is_empty(flag))
+        return -1;
+    
+    int result = 0;
+    
+    switch (flag)
+    {
+        case STACK1:
+            result = array[left_last --];
+            break;
+
+        case STACK2:
+            result = array[right_last ++];
+            break;
+
+        default:
+            break;
+    }
+
+    return result;
+}
+
+int Arrray_Stack::size(int flag)
+{
+    int size = 0;
+
+    switch (flag)
+    {
+        case STACK1:
+            size = left_last + 1;
+            break;
+        
+        case STACK2:
+            size = capcity - right_last + 1;
+            break;
+    
+        default:
+            break;
+    }
+
+    return size;
+}
+
+bool Arrray_Stack::is_empty(int flag)
+{
+    bool key = true;
+
+    switch (flag)
+    {
+        case STACK1:
+            key = (left_last == -1);
+            break;
+        
+        case STACK2:
+            key = (capcity == right_last);
+            break;
+
+        default:
+            break;
+    }
+
+    return key;
+}
+
+
+bool Arrray_Stack::check_capcity()
+{
+    return (left_last + 1 == right_last); 
+}
+
+void Arrray_Stack::display()
+{
+    for (int i = 0; i < capcity; ++ i)
+    {
+        std::cout << array[i] << std::endl;
+    }
+}
+
+void Arrray_Stack::increase_capcity()
+{
+    int origin_capcity = capcity;
+
+    capcity *= 2;
+
+    int* new_array = new int[capcity];
+
+    for (int i = 0; i <= left_last; ++ i)
+        new_array[i] = array[i];
+    for (int i = origin_capcity - 1; i >= right_last; -- i)
+        new_array[i + origin_capcity] = array[i];
+
+    
+    right_last += origin_capcity;
+    delete array;
+    array = new_array;
 }

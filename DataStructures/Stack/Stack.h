@@ -1,4 +1,5 @@
 class Stack;
+#include <vector>
 
 class Node
 {
@@ -123,4 +124,56 @@ public:
     int  front();
     bool is_empty();
     int  size();
+};
+
+/***
+ * 来源：经典面试题
+ * 描述：已知一个入栈序列，判断出栈序列是否合法
+ * 思路：整体上就是模拟序列入栈出栈的方式，采用两个vector和一个辅助栈来进行模拟操作
+ * **/
+
+class CheckLegit
+{
+private:
+    std::vector<int> in_seq;
+    std::vector<int> out_seq;
+    Stack* stack;
+
+public:
+    CheckLegit();
+    ~CheckLegit();
+    CheckLegit(std::vector<int> in_seq, std::vector<int> out_seq);
+
+    bool is_invalid();
+};
+
+
+/****
+ * 来源：经典面试题
+ * 描述：使用一个数组实现两个栈，使得只要数组还有空间就能入栈成功
+ * 思路：详细见附件md中的分析
+ * ***/
+#define STACK1 0
+#define STACK2 1
+
+class Arrray_Stack
+{
+private:
+    int* array;
+    int left_last;
+    int right_last;
+    int capcity;
+
+public:
+    Arrray_Stack();
+    Arrray_Stack(int capcity);
+    ~Arrray_Stack();
+
+    void increase_capcity();
+    void push(int flag, int value);
+    int  pop(int flag);
+    int  size(int flag);
+    bool is_empty(int flag);
+    bool check_capcity();
+    void display();
 };
