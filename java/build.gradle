@@ -26,11 +26,16 @@ dependencies {
 
     // Use TestNG framework, also requires calling test.useTestNG() below
     testImplementation 'org.testng:testng:6.14.3'
+
+    compile group: 'org.openjdk.jol', name: 'jol-core', version: '0.9'
 }
 
 application {
     // Define the main class for the application
-    mainClassName = 'me.learn.App'
+    // mainClassName = 'com.dx.learn.App'
+    mainClassName = project.hasProperty('mainClass') ? getProperty('mainClass') : 'com.dx.learn.App'
+    // 传递jvm参数
+//     applicationDefaultJvmArgs = [ '-XX:-UseCompressedOops' ]
 }
 
 test {
